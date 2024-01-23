@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/content.css">
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <title>CRM</title>
+</head>
+<body>
+    <div class="l-navbar" id="navbar">
+        <div class="nav">
+            <div>
+                <a href="{{ url_for('index') }}" class="nav__logo">
+                    <img src="/static/img/favicon.png" alt="" class="nav__logo-icon">
+                    <span class="nav__logo-text">CRM</span>
+                </a>
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class='bx bxs-chevron-right'></i>
+                </div>
+                <ul class="nav__list">
+                    <a href="{{ url_for('index') }}" class="nav__link active">
+                        <i class='bx bx-grid-alt nav__icon'></i>
+                        <span class="nav__text">Trang Chủ</span>
+                    </a>
+                    </a>
+                    <a href="#" class="nav__link active">
+                        <i class='bx bx-bar-chart nav__icon'></i>
+                        <span class="nav__text">Phân tích khách hàng</span>
+                    </a>
+                    <a href="{{ url_for('manage') }}" class="nav__link active">
+                        <i class='bx bx-user nav__icon'></i>
+                        <span class="nav__text">Quản lý thông tin</span>
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="nav__link active">
+                        <i class='bx bx-stats nav__icon'></i>
+                        <span class="nav__text">Thống Kê</span>
+                    </a>
+                    {% if username %}
+                        <p style="color:white;">Xin chào, {{ username }}!</p>
+                    {% endif %}
+                </ul>
+            </div>
+            {% if 'username' in session %}
+                <a href="{{ url_for('logout') }}" class="nav__link">
+                    <i class='bx bx-log-out-circle nav__icon'></i>
+                    <span class="nav__text">Đăng Xuất</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav__link active">
+                    <i class='bx bx-log-in-circle nav__icon'></i>
+                    <span class="nav__text">Đăng Nhập</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content">
+        <form action="{{ url_for('manage') }}" method="get" style="display: inline;">
+            <select id="search_table_select" name="table_select">
+                <option value="products_type" {% if selected_table == 'products_type' %}selected{% endif %}>Loại sản phẩm</option>
+                <option value="products" {% if selected_table == 'products' %}selected{% endif %}>Sản phẩm</option>
+                <option value="reviews" {% if selected_table == 'reviews' %}selected{% endif %}>Đánh giá</option>
+            </select>
+            <button type="submit">Tải</button>
+        </form>
+    
+        <form action="{{ url_for('manage') }}" method="get" style="display: inline;">
+            <input type="hidden" name="table_select" id="hidden_table_select" value="{{ selected_table }}">
+            <input type="text" name="search" id="search" value="{{ request.args['search'] }}">
+            <button type="submit">Tìm kiếm</button>
+        </form>             
+    
+        <h2>
+            {% if selected_table %}
+                {% if selected_table == 'products_type' %}Loại sản phẩm
+                {% elif selected_table == 'products' %}Sản phẩm
+                {% elif selected_table == 'reviews' %}Đánh giá
+                {% endif %}
+            {% else %}
+                404
+            {% endif %}
+        </h2>
+
+        {% if selected_table == 'products_type' or selected_table == 'products' %}
+            <a href="{{ url_for('add_data', data_type=selected_table) }}">
+                <button type="submit">
+                    <i class="fas fa-plus"></i> Thêm
+                </button>
+            </a>
+        {% endif %}
+    
+        {% if selected_table %}
+            <table>
+                <thead>
+                    <tr>
+                        {% if selected_table == 'products_type' %}
+                            <th>Mã</th>
+                            <th>Loại sản phẩm</th>
+                            <th>Sửa</th>
+                            <th>Xóa</th>
+                        {% elif selected_table == 'products' %}
+                            <th>Mã</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá bán</th>
+                            <th>Giá gốc</th>
+                            <th>Loại sản phẩm</th>
+                            <th>Sửa</th>
+                            <th>Xóa</th>
+                        {% elif selected_table == 'reviews' %}
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Tuổi</th>
+                            <th>Bình luận</th>
+                            <th>Đánh giá (sao)</th>
+                            <th>Tổng lượt thích</th>
+                            <th>Ngày đánh giá</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Loại sản phẩm</th>
+                            <th>Giá bán</th>
+                            <th>Giá gốc</th>
+                            <th>Đã mua</th>
+                            <th>Ngày mua</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr onmouseover="showData(this)">
+                            {% for key, value in item.items() %}
+                                {% if 'price' in key or 'cost' in key %}
+                                    <td>{{ "{:,.0f}".format(value) }} đ</td>
+                                {% else %}
+                                    <td>{{ value }}</td>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if selected_table == 'products_type' or selected_table == 'products' %}
+                                    <td>
+                                        <a href="{{ url_for('edit_data', data_type=selected_table, item_id=item.id) }}">
+                                            <button type="submit">
+                                                <i class="fas fa-edit"></i> Sửa
+                                            </button>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#">
+                                            <button type="submit">
+                                                <i class="fas fa-trash-alt"></i> Xóa
+                                            </button>
+                                        </a>
+                                    </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="select-device__pagination">
+                <ul class="pagination pagination-space">
+                    {% if current_page > 1 %}
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?table_select={{ selected_table }}&search={{ search_term }}&page={{ current_page|default(1)|int - 1 }}">
+                                &lt;&lt;
+                            </a>
+                        </li>
+                    {% endif %}
+            
+                    {% with start_page=current_page, end_page=current_page+4 %}
+                        {% for page in range(start_page, end_page+1) %}
+                            {% if page > 0 and page <= num_pages %}
+                                <li class="pagination-item {% if page == current_page %}active{% endif %}">
+                                    <a class="pagination-link" href="?table_select={{ selected_table }}&search={{ search_term }}&page={{ page }}">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+            
+                    {% if current_page < num_pages %}
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?table_select={{ selected_table }}&search={{ search_term }}&page={{ current_page + 1 }}">
+                                &gt;&gt;
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>                                                                             
+        {% endif %}
+
+        <script>
+            function showData(row) {
+                console.log(row.innerText);
+            }
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const navToggle = document.getElementById('nav-toggle');
+                const navList = document.querySelector('.nav__list');
+    
+                navToggle.addEventListener('click', function() {
+                    navList.style.display = (navList.style.display === 'none' || navList.style.display === '') ? 'block' : 'none';
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                const navList = document.querySelector('.nav__list');
+                const navToggle = document.querySelector('.nav__toggle');
+                const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    
+                if (screenWidth <= 768) {
+                    navList.style.display = 'none'; 
+                    navToggle.style.display = 'block'; 
+                } else {
+                    navList.style.display = 'block'; 
+                    navToggle.style.display = 'none'; 
+                }
+            }); 
+        </script>
+    </div>
+</body>
+</html>

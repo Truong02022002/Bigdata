@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/add.css">
+    <title>Add Products</title>
+</head>
+<body>
+    <form method="POST" action="{{ url_for('add_data', data_type='products') }}">
+        <h2>Thêm sản phẩm</h2>
+
+        <label for="name_product">Tên sản phẩm:</label>
+        <input type="text" name="name_product" required>
+
+        <label for="price">Giá bán:</label>
+        <input type="number" name="price" required>
+
+        <label for="cost">Giá gốc:</label>
+        <input type="number" name="cost" required>
+
+        <label for="type_product_id">Id loại sản phẩm:</label>
+        <input type="number" name="type_product_id" required>
+
+        <button type="submit">Lưu</button>
+    </form>
+</body>
+</html>

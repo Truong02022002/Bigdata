@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/all.css">
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>CRM</title>
+</head>
+<body>
+    <div class="l-navbar" id="navbar">
+        <div class="nav">
+            <div>
+                <a href="{{ url_for('index') }}" class="nav__logo">
+                    <img src="/static/img/favicon.png" alt="" class="nav__logo-icon">
+                    <span class="nav__logo-text">CRM</span>
+                </a>
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class='bx bxs-chevron-right'></i>
+                </div>
+                <ul class="nav__list">
+                    <a href="{{ url_for('index') }}" class="nav__link active">
+                        <i class='bx bx-grid-alt nav__icon'></i>
+                        <span class="nav__text">Trang Chủ</span>
+                    </a>
+                    </a>
+                    <a href="#" class="nav__link active">
+                        <i class='bx bx-bar-chart nav__icon'></i>
+                        <span class="nav__text">Phân tích khách hàng</span>
+                    </a>
+                    <a href="#" class="nav__link active">
+                        <i class='bx bx-user nav__icon'></i>
+                        <span class="nav__text">Quản lý thông tin</span>
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="nav__link active">
+                        <i class='bx bx-stats nav__icon'></i>
+                        <span class="nav__text">Thống Kê</span>
+                    </a>
+                    {% if username %}
+                        <p style="color:white;">Xin chào, {{ username }}!</p>
+                    {% endif %}
+                </ul>
+            </div>
+            {% if 'username' in session %}
+                <a href="{{ url_for('logout') }}" class="nav__link">
+                    <i class='bx bx-log-out-circle nav__icon'></i>
+                    <span class="nav__text">Đăng Xuất</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav__link active">
+                    <i class='bx bx-log-in-circle nav__icon'></i>
+                    <span class="nav__text">Đăng Nhập</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content">
+        <canvas id="myChart" style="width: 100%; max-width: 800px;"></canvas>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="{{ url_for('static', filename='chart.js') }}"></script>
+        <script>
+            function initializeChart(type, labels, data, colors, chartTitle) {
+                var ctx = document.getElementById('myChart').getContext('2d');
+
+                if (type === 'percentage_bought') {
+                    var myDoughnutChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: colors,
+                            }]
+                        },
+                        options: {
+                            aspectRatio: 4.2,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: chartTitle,
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                } 
+                else if (type === 'compare') {
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Tổng doanh thu',
+                                data: data,
+                                borderColor: colors,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            zoomEnabled: true,
+                            aspectRatio: 4.2,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: chartTitle,
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                }
+                else if (type == 'compares'){
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Tổng sản phẩm đã bán',
+                                data: {{ data | tojson | safe }},
+                                borderColor: {{ colors | tojson | safe }},
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            aspectRatio: 4.2,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                }
+                else if (type == 'avgrateStar'){
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Điểm đánh giá',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            aspectRatio: 4.2,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                }
+                    
+                else if (type == 'type_product'){
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Điểm đánh giá',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            aspectRatio: 4.2,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                }
+
+                else if (type == 'age'){
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Tổng khách hàng đã mua',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            aspectRatio: 4.2,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                } 
+                    
+                else if (type == 'products'){
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Tổng sản phẩm',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            aspectRatio: 4.0,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                }
+                    
+                    
+                else if (type == 'products_price'){
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Tổng doanh thu',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                }
+                    
+                    
+                else if (type == 'reviews_rateStar'){
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Lượt đánh giá',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                        },
+                    });
+                }
+                    
+                else if (type == 'rateStars'){
+                    var combinedChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [
+                                {
+                                    label: 'Lượt đánh giá',
+                                    data: {{ data | tojson | safe }},
+                                    fill: false,
+                                    borderColor: {{ colors | tojson | safe }},
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Lượt đánh giá của người đã mua',
+                                    data: {{ data_1 | tojson | safe }},
+                                    type: 'line',
+                                    backgroundColor: {{ colors_1 | tojson | safe }},
+                                    borderColor: {{ colors_1 | tojson | safe }},
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Lượt đánh giá của người chưa mua',
+                                    data: {{ data_2 | tojson | safe }},
+                                    type: 'line',
+                                    backgroundColor: {{ colors_2 | tojson | safe }},
+                                    borderColor: {{ colors_2 | tojson | safe }},
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            }
+                        }
+                    });
+                }
+                    
+                else if (type == 'discounts'){
+                    var combinedChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [
+                                {
+                                    label: 'Lượt mua',
+                                    data: {{ data_1 | tojson | safe }},
+                                    yAxisID: 'y-axis-2',
+                                    fill: false,
+                                    borderColor: {{ colors_1 | tojson | safe }},
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Giảm giá',
+                                    data: {{ data | tojson | safe }},
+                                    yAxisID: 'y-axis-1',
+                                    type: 'bar',
+                                    backgroundColor: {{ colors | tojson | safe }},
+                                    borderColor: {{ colors | tojson | safe }},
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [
+                                    {
+                                        id: 'y-axis-1',
+                                        type: 'linear',
+                                        position: 'left',
+                                        ticks: {
+                                            beginAtZero: true
+                                        },
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    },
+                                    {
+                                        id: 'y-axis-2',
+                                        type: 'linear',
+                                        position: 'right',
+                                        ticks: {
+                                            beginAtZero: true
+                                        },
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }
+                                ]
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            }
+                        }
+                    });
+                }
+                                  
+                else if (type == 'price'){
+                    var combinedChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [
+                                {
+                                    label: 'Lượt mua',
+                                    data: {{ data_1 | tojson | safe }},
+                                    yAxisID: 'y-axis-2',
+                                    fill: false,
+                                    borderColor: {{ colors | tojson | safe }},
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Giá bán',
+                                    data: {{ data_2 | tojson | safe }},
+                                    yAxisID: 'y-axis-1',
+                                    type: 'bar',
+                                    backgroundColor: {{ colors | tojson | safe }},
+                                    borderColor: {{ colors | tojson | safe }},
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Giá gốc',
+                                    data: {{ data | tojson | safe }},
+                                    yAxisID: 'y-axis-1',
+                                    type: 'bar',
+                                    backgroundColor: {{ colors_1 | tojson | safe }},
+                                    borderColor: {{ colors_1 | tojson | safe }},
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Giảm giá',
+                                    data: {{ data_3 | tojson | safe }},
+                                    yAxisID: 'y-axis-1',
+                                    type: 'bar',
+                                    backgroundColor: {{ colors_2 | tojson | safe }},
+                                    borderColor: {{ colors_2 | tojson | safe }},
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [
+                                    {
+                                        id: 'y-axis-1',
+                                        type: 'linear',
+                                        position: 'left',
+                                        ticks: {
+                                            beginAtZero: true
+                                        },
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    },
+                                    {
+                                        id: 'y-axis-2',
+                                        type: 'linear',
+                                        position: 'right',
+                                        ticks: {
+                                            beginAtZero: true
+                                        },
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }
+                                ]
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            }
+                        }
+                    });
+                }
+                    
+
+                else if (type == 'comment_review'){
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Lượt bình luận đánh giá',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                            scales: {
+                                x: [{
+                                    display: false,
+                                }],
+                                y: [{
+                                    display: true,
+                                }],
+                            },
+                        },
+                    });
+                }
+                    
+                    
+                else if (type == 'sumtotallikes'){
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Lượt thích',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            }
+                        },
+                    });
+                }
+                    
+                    
+                else if (type == 'countrateStars'){
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ labels | tojson | safe }},
+                            datasets: [{
+                                label: 'Lượt thích',
+                                data: {{ data | tojson | safe }},
+                                backgroundColor: {{ colors | tojson | safe }},
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '{{chart_title}}',
+                                    fontSize: 30,
+                                },
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            }
+                        },
+                    });
+                }  
+            }
+
+            {% for type in available_dashboard_types %}
+                initializeChart('{{ type }}', {{ labels[type] | tojson | safe }},
+                                {{ data[type] | tojson | safe }},
+                                {{ colors[type] | tojson | safe }},
+                                '{{ chart_titles[type] }}');
+            {% endfor %}
+        </script>
+    </div>
+</body>
+</html>

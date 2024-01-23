@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/add.css">
+    <title>Thay đổi thông tin loại sản phẩm</title>
+</head>
+<body>
+    <form method="POST" action="{{ url_for('edit_data', data_type='products_type', item_id=item.id) }}">
+        <h2>Edit Product Type</h2>
+    
+        <label for="type_products">Product Type:</label>
+        <input type="text" name="type_products" value="{{ item.type_products }}" required>
+    
+        <button type="submit">Save</button>
+    </form> 
+</body>
+</html>

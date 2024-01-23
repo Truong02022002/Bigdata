@@ -1,0 +1,28 @@
+.content {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    color: #333;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+h1 {
+    color: #b5bbc0;
+    font-size: 100px;
+    margin: 0;
+}
+
+h2 {
+    color: gray;
+    font-size: 40px;
+}
+
+.content p {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+a {
+    color: #5bc0de;
+    text-decoration: none;
+}

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Item</title>
+</head>
+<body>
+    <h2>Delete {{ data_type.capitalize() }}</h2>
+    <p>Are you sure you want to delete item {{ item_id }}?</p>
+    <form method="POST" action="{{ url_for('delete_data', data_type=data_type, item_id=item['id']) }}">
+        <button type="submit">Yes, Delete</button>
+    </form>
+    <a href="{{ url_for('manage', table_select=data_type) }}">Cancel</a>
+</body>
+</html>

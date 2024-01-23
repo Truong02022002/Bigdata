@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/404.css">
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
+    <title>404 Not Found</title>
+</head>
+<body>
+    <div class="l-navbar" id="navbar">
+        <div class="nav">
+            <div>
+                <a href="{{ url_for('index') }}" class="nav__logo">
+                    <img src="/static/img/favicon.png" alt="" class="nav__logo-icon">
+                    <span class="nav__logo-text">CRM</span>
+                </a>
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class='bx bxs-chevron-right'></i>
+                </div>
+                <ul class="nav__list">
+                    <a href="{{ url_for('index') }}" class="nav__link active">
+                        <i class='bx bx-grid-alt nav__icon'></i>
+                        <span class="nav__text">Trang Chủ</span>
+                    </a>
+                    </a>
+                    <a href="#" class="nav__link active">
+                        <i class='bx bx-bar-chart nav__icon'></i>
+                        <span class="nav__text">Phân tích khách hàng</span>
+                    </a>
+                    <a href="{{ url_for('manage') }}" class="nav__link active">
+                        <i class='bx bx-user nav__icon'></i>
+                        <span class="nav__text">Quản lý thông tin</span>
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="nav__link active">
+                        <i class='bx bx-stats nav__icon'></i>
+                        <span class="nav__text">Thống Kê</span>
+                    </a>
+                    {% if username %}
+                        <p style="color:white;">Xin chào, {{ username }}!</p>
+                    {% endif %}
+                </ul>
+            </div>
+            {% if 'username' in session %}
+                <a href="{{ url_for('logout') }}" class="nav__link">
+                    <i class='bx bx-log-out-circle nav__icon'></i>
+                    <span class="nav__text">Đăng Xuất</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav__link active">
+                    <i class='bx bx-log-in-circle nav__icon'></i>
+                    <span class="nav__text">Đăng Nhập</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content">
+        <h1>404</h1>
+        <h2>Không tìm thấy trang</h2>
+        <p>Ồ! Trang bạn đang tìm không tồn tại.</p>
+    </div>
+</body>
+</html>

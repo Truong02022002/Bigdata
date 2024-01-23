@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập</title>
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    <form method="POST" action="{{ url_for('login') }}">
+        <h3>Đăng Nhập</h3>
+
+        <label for="identifier">Email hoặc Tên đăng nhập:</label>
+        <input type="text" placeholder="Email or Username" id="identifier" name="identifier" required>
+
+
+        <label for="password">Mật Khẩu</label>
+        <input type="password" placeholder="Mật Khẩu" id="password" name="password">
+
+        <button type="submit">Đăng Nhập</button>
+        <div class="social">
+            <div class="go"><a href="{{ url_for('google_login') }}"><i class="fab fa-google"></i>  Google++</a></div>
+        </div>
+    </form>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thay đổi thông tin sản phẩm</title>
+</head>
+<body>
+    <form method="POST" action="{{ url_for('edit_data', data_type='products', item_id=item.id) }}">
+        <h2>Edit Product</h2>
+
+        <label for="name_product">Product Name:</label>
+        <input type="text" name="name_product" value="{{ item.name_product }}" required>
+
+        <label for="price">Price:</label>
+        <input type="number" name="price" value="{{ item.price }}" required>
+
+        <label for="cost">Cost:</label>
+        <input type="number" name="cost" value="{{ item.cost }}" required>
+
+        <label for="type_product_id">Product Type ID:</label>
+        <input type="number" name="type_product_id" value="{{ item.type_product_id }}" required>
+
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
